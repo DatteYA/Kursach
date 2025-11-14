@@ -1,0 +1,394 @@
+\section*{Приложение А}
+\addcontentsline{toc}{section}{Приложение А — Исходный код программы}
+
+\begin{center}
+	\Large\textbf{Исходный код программной реализации продукционной системы Маркова}
+\end{center}
+
+\lstset{
+	language=Python,
+	basicstyle=\ttfamily\footnotesize,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green!50!black},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	breaklines=true,
+	frame=single,
+	tabsize=4
+}
+
+\begin{lstlisting}
+	import os
+	import time
+	import tkinter as tk
+	from tkinter import filedialog, messagebox, scrolledtext
+	import customtkinter as ctk
+	
+	# Класс правила Маркова
+	class MarkovRules:
+	def __init__(self, left, right, stop=False):
+	self.left = left # левая чсть правила
+	self.right = right # правая часть правила
+	self.stop = stop # правило с точкой или нет bool типа
+	
+	# поиск левой части в строке и замена её на правую(только первое вхождение)
+	def apply(self, text):
+	if self.left in text:
+	new_text = text.replace(self.left, self.right, 1)
+	return new_text, self.stop
+	return None, False
+	
+	
+	# Класс системы Маркова
+	class MarkovSystem:
+	def __init__(self, rules, animation=False):
+	self.rules = rules # Список правил (Объекты касса MarkovRules)
+	self.steps = 0 # счётчик замен
+	self.applied_rules = {} # для статистики: словарь хранит в себе количество применений каждого правила
+	self.lengths = [] # хранит длину строки на каждом шагу
+	self.animation = animation # bool - нужна ли анимация или нет
+	
+	# запуск системы
+	def run(self, text):
+	print("\n🔹 Запуск системы Маркова...\n")
+	log = [] # список всех шагов преобразований
+	
+	while True:
+	#проверка правил по порядку
+	for rule in self.rules:
+	new_text, stop = rule.apply(text)
+	if new_text: # если не None(есть совпадение)
+	self.steps += 1
+	
+	# Подсчёт количества применений каждого правила
+	key = f"{rule.left} → {rule.right}"
+	self.applied_rules[key] = self.applied_rules.get(key, 0) + 1 
+	
+	self.lengths.append(len(new_text)) # длина новой строки
+	visual = f"{text} → {new_text}" # текстовое представление шага
+	print(f"({self.steps}) {visual}  | правило: {key}") # текстовое представление шага в консоли
+	log.append(visual) # запоминаем в логах
+	text = new_text # обновляем строку
+	
+	# имитация анимации
+	if self.animation:
+	time.sleep(0.6)
+	
+	# если stop не False
+	if stop:
+	print("\n Алгоритм завершён (правило с точкой).")
+	self.save_log(log)
+	self.show_stats()
+	return text
+	
+	# После любого успешного шага — снова начинаем с первого правила
+	break
+	else:
+	# Если не нашлось ни одного применимого правила
+	print("\n Больше нет применимых правил.")
+	self.save_log(log)
+	self.show_stats()
+	return text
+	
+	# функция сохранения журнала шагов в log.txt
+	@staticmethod
+	def save_log(log):
+	with open("C:\\Users\\user\\desktop\\log.txt", "w", encoding="utf-8") as f:
+	f.write("\n".join(log))
+	print(" Журнал шагов сохранён в log.txt\n")
+	
+	# Показ статистики
+	def show_stats(self):
+	print(" Статистика выполнения:\n")
+	print(f"• Всего шагов: {self.steps}")
+	
+	if self.lengths:
+	# рассчитываем среднюю длину строки
+	avg_len = sum(self.lengths) / len(self.lengths)
+	print(f"• Средняя длина строки: {avg_len:.2f}")
+	
+	if self.applied_rules:
+	# находим правило, которое применяеся чаще всего
+	most_common_rule = max(self.applied_rules, key=self.applied_rules.get)
+	count = self.applied_rules[most_common_rule]
+	print(f"• Самое частое правило: {most_common_rule} ({count} раз)")
+	
+	
+	
+	# Функция загрузки правил из файла
+	def load_rules_from_file():
+	base_path = "C:\\Users\\user\\Desktop\\"
+	filename = input("Введите имя файла с правилами (например: rules.txt): ").strip()
+	full_path = os.path.join(base_path, filename)
+	
+	rules = [] # павила
+	
+	# проверка существования файла
+	if not os.path.exists(full_path):
+	print(f"⚠️ Файл '{full_path}' не найден.")
+	return rules
+	# читаем файл и извлекаем правила
+	with open(full_path, "r", encoding="utf-8") as f:
+	for line in f:
+	line = line.strip()
+	if not line or "->" not in line:
+	continue
+	left, right = line.split("->")
+	left, right = left.strip(), right.strip()
+	stop = right.endswith(".")
+	if stop:
+	right = right[:-1]
+	
+	# создаём объект правила и добавляет в список
+	rules.append(MarkovRules(left, right, stop))
+	
+	print(f"✅ Правила успешно загружены из файла: {filename}\n")
+	return rules
+	
+	# Функция ручного ввода правил
+	def input_rules():
+	print("\nВвод правил вручную (используйте формат 'левая_часть -> правая_часть')")
+	print("Чтобы завершить ввод, просто нажмите Enter на пустой строке.")
+	
+	rules = []  # Список правил, который будем заполнять
+	
+	
+	while True: 
+	line = input("Правило (пример: ab -> c или a -> x.): ").strip()
+	
+	# Если пустая строка, выходим из цикла
+	if not line:
+	break
+	
+	# проверка формата правила
+	if "->" not in line: 
+	print("Ошибка: правило должно содержать '->'")
+	continue
+	
+	left, right = line.split("->")
+	left, right = left.strip(), right.strip()  # Убираем лишние пробелы
+	
+	stop = right.endswith(".")  # если заканчивается точкой правила завершающее
+	if stop:
+	right = right[:-1]  # убираем точку из правой части
+	
+	rules.append(MarkovRules(left, right, stop))  # создаём объект правила и добавляем в список
+	
+	return rules
+	
+	
+	def start_gui():
+	ctk.set_appearance_mode("dark")  # "light", "dark", "system"
+	ctk.set_default_color_theme("blue")
+	
+	app = ctk.CTk()
+	app.title("Система Маркова")
+	app.geometry("900x650")
+	
+	# Заголовок
+	ctk.CTkLabel(app, text="💡 Система Маркова", font=("Segoe UI", 24, "bold")).pack(pady=15)
+	
+	# Основной контейнер
+	frame = ctk.CTkFrame(app, corner_radius=12)
+	frame.pack(pady=10, padx=20, fill="both", expand=True)
+	
+	# Исходная строка
+	input_entry = ctk.CTkEntry(frame, placeholder_text="Введите исходную строку...", height=40)
+	input_entry.pack(pady=15, padx=20, fill="x")
+	
+	# Кнопки
+	button_frame = ctk.CTkFrame(frame, fg_color="transparent")
+	button_frame.pack(pady=5)
+	
+	rules_data = []
+	anim_var = tk.BooleanVar(value=False)
+	
+	# 📂 Загрузка правил из файла
+	def load_rules():
+	nonlocal rules_data
+	path = filedialog.askopenfilename(title="Выберите файл с правилами",
+	filetypes=[("Текстовые файлы", "*.txt")])
+	if not path:
+	return
+	
+	try:
+	rules_data.clear()
+	with open(path, "r", encoding="utf-8") as f:
+	lines = f.readlines()
+	
+	output_box.delete("1.0", "end")
+	output_box.insert("end", f"📘 Загружен файл: {path}\n\n")
+	for line in lines:
+	line = line.strip()
+	if not line or "->" not in line:
+	continue
+	left, right = line.split("->")
+	left, right = left.strip(), right.strip()
+	stop = right.endswith(".")
+	if stop:
+	right = right[:-1]
+	rules_data.append(MarkovRules(left, right, stop))
+	output_box.insert("end", f"{left} → {right}{'.' if stop else ''}\n")
+	output_box.insert("end", "\n✅ Правила успешно загружены.\n")
+	except Exception as e:
+	messagebox.showerror("Ошибка", f"Не удалось загрузить файл:\n{e}")
+	
+	#Ручной ввод правил
+	def input_rules_gui():
+	def save_rules():
+	rules_data.clear()
+	lines = text_area.get("1.0", "end").strip().splitlines()
+	for line in lines:
+	if "->" in line:
+	left, right = line.split("->")
+	left, right = left.strip(), right.strip()
+	stop = right.endswith(".")
+	if stop:
+	right = right[:-1]
+	rules_data.append(MarkovRules(left, right, stop))
+	top.destroy()
+	output_box.insert("end", f"\n📝 Добавлено {len(rules_data)} правил из ручного ввода.\n")
+	
+	top = ctk.CTkToplevel(app)
+	top.title("Ручной ввод правил")
+	
+	# Делает окно привязанным к главному и всегда поверх
+	top.transient(app)
+	top.grab_set()
+	top.focus_set()
+	
+	tk.Label(top, text="Введите правила (формат: a -> b или x -> y.)").pack(pady=5)
+	text_area = scrolledtext.ScrolledText(top, width=50, height=15)
+	text_area.pack(padx=10, pady=5)
+	ctk.CTkButton(top, text="Сохранить", command=save_rules).pack(pady=5)
+	
+	def run_markov():
+	if not rules_data:
+	messagebox.showwarning("Нет правил", "Сначала загрузите или введите правила!")
+	return
+	text = input_entry.get().strip()
+	if not text:
+	messagebox.showwarning("Пустая строка", "Введите исходный текст.")
+	return
+	
+	output_box.delete("1.0", "end")
+	system = MarkovSystem(rules_data, animation=False)
+	log = []
+	
+	def show_stats_and_result(final_text):
+	system.save_log(log)
+	stats = f"\n📊 Статистика:\n• Всего шагов: {system.steps}\n"
+	if system.lengths:
+	stats += f"• Средняя длина строки: {sum(system.lengths)/len(system.lengths):.2f}\n"
+	if system.applied_rules:
+	most_common_rule = max(system.applied_rules, key=system.applied_rules.get)
+	count = system.applied_rules[most_common_rule]
+	stats += f"• Самое частое правило: {most_common_rule} ({count} раз)\n"
+	stats += f"\n🏁 Результат: {final_text}\n"
+	output_box.insert("end", stats)
+	output_box.see("end")
+	
+	if anim_var.get():  # Анимация включена
+	def step_animation(current_text):
+	for rule in system.rules:
+	new_text, stop = rule.apply(current_text)
+	if new_text:
+	system.steps += 1
+	key = f"{rule.left} → {rule.right}"
+	system.applied_rules[key] = system.applied_rules.get(key, 0) + 1
+	system.lengths.append(len(new_text))
+	
+	visual = f"({system.steps}) {current_text} → {new_text}  | правило: {key}"
+	log.append(visual)
+	output_box.insert("end", visual + "\n")
+	output_box.see("end")
+	
+	if stop:
+	show_stats_and_result(new_text)
+	return
+	
+	# Переходим к следующему шагу через after
+	app.after(300, lambda c=new_text: step_animation(c))
+	return
+	else:
+	# Нет больше применимых правил
+	show_stats_and_result(current_text)
+	
+	step_animation(text)
+	
+	else:  # Анимация выключена — все сразу
+	current_text = text
+	while True:
+	for rule in system.rules:
+	new_text, stop = rule.apply(current_text)
+	if new_text:
+	system.steps += 1
+	key = f"{rule.left} → {rule.right}"
+	system.applied_rules[key] = system.applied_rules.get(key, 0) + 1
+	system.lengths.append(len(new_text))
+	
+	visual = f"({system.steps}) {current_text} → {new_text}  | правило: {key}"
+	log.append(visual)
+	output_box.insert("end", visual + "\n")
+	output_box.see("end")
+	
+	current_text = new_text
+	if stop:
+	show_stats_and_result(current_text)
+	return
+	break
+	else:
+	show_stats_and_result(current_text)
+	return
+	
+	# Кнопки
+	ctk.CTkButton(button_frame, text="📂 Загрузить правила", command=load_rules, width=180).grid(row=0, column=0, padx=5)
+	ctk.CTkButton(button_frame, text="📝 Ручной ввод", command=input_rules_gui, width=180).grid(row=0, column=1, padx=5)
+	ctk.CTkCheckBox(button_frame, text="Анимация", variable=anim_var).grid(row=0, column=2, padx=5)
+	ctk.CTkButton(button_frame, text="▶️ Запустить", command=run_markov, width=180).grid(row=0, column=3, padx=5)
+	
+	# Поле вывода
+	output_box = ctk.CTkTextbox(frame, height=350)
+	output_box.pack(pady=10, padx=20, fill="both", expand=True)
+	output_box.insert("end", "Шаги выполнения алгоритма...\n")
+	
+	app.mainloop()
+	
+	if __name__ == "__main__":
+	start_gui()
+	# # Основной цикл
+	# def main():
+	#     while True:
+	#         choice = main_menu() # шоу меню
+	#         if choice == "1": # выбор загрузки правил из файла
+	#             rules = load_rules_from_file() 
+	#         elif choice == "2": # пользователь выбрал ручной ввод правил
+	#             rules = input_rules()
+	#         elif choice == "3": # выход
+	#             print("👋 Завершение работы.")
+	#             break
+	#         else: # некорректный ввод
+	#             print("❌ Неверный выбор.\n")
+	#             continue
+	
+	#         # проверка: есть ли правила
+	#         if not rules:
+	#             print("⚠️ Нет загруженных правил.")
+	#             continue
+	
+	#         text = input("\nВведите исходную строку: ").strip()
+	
+	#         anim_choice = input("Включить анимацию (y/n)? ").lower() == "y"
+	
+	#         #запуск
+	#         system = MarkovSystem(rules, animation=anim_choice)
+	#         result = system.run(text)
+	
+	#         print(f"\n🏁 Результат: {result}\n")
+	#         input("Нажмите Enter, чтобы вернуться в меню...")
+	
+	
+	# if __name__ == "__main__":
+	#     main()
+	
+\end{lstlisting}

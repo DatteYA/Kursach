@@ -1,0 +1,169 @@
+\section{Технический проект}
+\subsection{Общая характеристика организации решения задачи}
+
+Необходимо спроектировать и разработать продукционную систему Маркова, которая моделирует применение правил на входной строке и выводит результаты в графическом интерфейсе.  
+
+Система представляет собой набор взаимосвязанных окон, содержащих:
+\begin{itemize}
+	\item исходный текст;
+	\item правила Маркова (загрузка из файла и ручной ввод);
+	\item пошаговое отображение изменений текста;
+	\item статистику работы алгоритма;
+	\item сохранение журнала выполнения шагов в файл.
+\end{itemize}
+
+\subsection{Обоснование выбора технологии проектирования}
+
+На современном рынке программных средств для разработки настольных приложений существует множество инструментов. Для поставленной задачи наилучшим выбором является использование языка Python с библиотекой CustomTkinter для реализации GUI и объектно-ориентированного подхода для построения продукционной системы.
+
+\subsubsection{Описание используемых технологий и языков программирования}
+
+\subsubsection{Язык программирования Python}
+
+Python — высокоуровневый интерпретируемый язык программирования, широко используемый для разработки десктопных и веб-приложений, научных вычислений и машинного обучения.  
+
+\paragraph{Достоинства языка Python}
+\begin{itemize}
+	\item Простота синтаксиса, быстрый прототипинг.
+	\item Кроссплатформенность.
+	\item Большое количество библиотек для работы с текстом, GUI и данными.
+\end{itemize}
+
+\paragraph{Недостатки языка Python}
+\begin{itemize}
+	\item Интерпретируемый язык, низкая скорость исполнения по сравнению с C/C++.
+	\item Ограниченные возможности для создания нативных GUI без сторонних библиотек.
+\end{itemize}
+
+\subsubsection{Библиотека CustomTkinter}
+
+CustomTkinter — расширение стандартной библиотеки Tkinter, позволяющее создавать современные GUI-приложения с темной и светлой темой, а также кастомными элементами управления.
+
+\paragraph{Достоинства CustomTkinter}
+\begin{itemize}
+	\item Современный внешний вид элементов интерфейса.
+	\item Простая интеграция с Python.
+	\item Поддержка темной и светлой темы.
+\end{itemize}
+
+\paragraph{Недостатки CustomTkinter}
+\begin{itemize}
+	\item Ограниченная документация по сравнению с Tkinter.
+	\item Требует установки дополнительного пакета.
+\end{itemize}
+
+\subsection{Диаграмма компонентов и схема обмена данными между файлами компонента}
+
+Диаграмма компонентов отражает архитектуру системы:
+\begin{itemize}
+	\item GUI-приложение (окна, виджеты);
+	\item класс \texttt{MarkovRules} (правила Маркова);
+	\item класс \texttt{MarkovSystem} (логика применения правил);
+	\item файловая система (хранение правил и журнала).
+\end{itemize}
+
+\begin{figure}[ht]
+	\center{\includegraphics[width=1\linewidth]{components}}
+	\caption{Диаграмма компонентов продукционной системы Маркова}
+	\label{comp:image}
+\end{figure}
+
+Схема обмена данными между компонентами представлена на рисунке \ref{data:image}. Пользователь через GUI передаёт исходный текст и правила классу \texttt{MarkovSystem}, который применяет правила, обновляет текст, ведёт журнал и формирует статистику. Результаты отображаются в интерфейсе и сохраняются в файл.
+
+\begin{figure}[ht]
+	\center{\includegraphics[width=1\linewidth]{dataflow}}
+	\caption{Схема обмена данными между компонентами}
+	\label{data:image}
+\end{figure}
+
+\subsection{Диаграмма размещения}
+
+Диаграмма размещения показывает физическую структуру системы: пользовательский компьютер с GUI-приложением и файловую систему для хранения правил и журналов.
+
+\begin{figure}[ht]
+	\center{\includegraphics[width=0.6\linewidth]{deployment}}
+	\caption{Диаграмма размещения компонентов системы}
+	\label{place:image}
+\end{figure}
+
+\subsection{Содержание информационных блоков. Основные сущности}
+
+Основные сущности программы:
+\begin{itemize}
+	\item {Пользователь}
+	\item {Правило Маркова}
+	\item {Система Маркова}
+	\item {Журнал шагов}
+	\item {Результат выполнения}
+\end{itemize}
+
+
+\paragraph{Описание сущностей и их атрибутов}
+
+\renewcommand{\arraystretch}{0.8}
+\begin{xltabular}{\textwidth}{|X|p{3cm}|X|X|}
+	\caption{Атрибуты сущности \texttt{Пользователь}\label{user:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\endfirsthead
+	\caption*{Продолжение таблицы \ref{user:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\finishhead
+	name & String & true & Имя пользователя \\ \hline
+\end{xltabular}
+\renewcommand{\arraystretch}{1.0}
+
+\renewcommand{\arraystretch}{0.8}
+\begin{xltabular}{\textwidth}{|X|p{3cm}|X|X|}
+	\caption{Атрибуты сущности \texttt{Правило Маркова}\label{rule:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\endfirsthead
+	\caption*{Продолжение таблицы \ref{rule:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\finishhead
+	left & String & true & Левая часть правила \\ \hline
+	right & String & true & Правая часть правила \\ \hline
+	stop & Bool & false & Признак завершения работы системы \\ \hline
+\end{xltabular}
+\renewcommand{\arraystretch}{1.0}
+
+\renewcommand{\arraystretch}{0.8}
+\begin{xltabular}{\textwidth}{|X|p{3cm}|X|X|}
+	\caption{Атрибуты сущности \texttt{Система Маркова}\label{system:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\endfirsthead
+	\caption*{Продолжение таблицы \ref{system:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\finishhead
+	rules & List[MarkovRules] & true & Список правил \\ \hline
+	steps & Integer & true & Количество выполненных шагов \\ \hline
+	applied\_rules & Dict & true & Статистика применения правил \\ \hline
+	lengths & List[Int] & true & Длина строки на каждом шаге \\ \hline
+\end{xltabular}
+\renewcommand{\arraystretch}{1.0}
+
+\renewcommand{\arraystretch}{0.8}
+\begin{xltabular}{\textwidth}{|X|p{3cm}|X|X|}
+	\caption{Атрибуты сущности \texttt{Журнал шагов}\label{log:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\endfirsthead
+	\caption*{Продолжение таблицы \ref{log:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\finishhead
+	log & List[String] & true & Хронология изменений текста \\ \hline
+\end{xltabular}
+\renewcommand{\arraystretch}{1.0}
+
+\renewcommand{\arraystretch}{0.8}
+\begin{xltabular}{\textwidth}{|X|p{3cm}|X|X|}
+	\caption{Атрибуты сущности \texttt{Результат выполнения}\label{result:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\endfirsthead
+	\caption*{Продолжение таблицы \ref{result:table}}\\
+	\hline \centrow Поле & \centrow Тип & \centrow Обязательное & \centrow Описание \\ \hline
+	\finishhead
+	final\_text & String & true & Текст после применения всех правил \\ \hline
+	steps & Integer & true & Общее количество шагов \\ \hline
+	most\_common\_rule & String & false & Наиболее часто применяемое правило \\ \hline
+	avg\_length & Float & false & Средняя длина текста \\ \hline
+\end{xltabular}
+\renewcommand{\arraystretch}{1.0}

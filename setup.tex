@@ -1,0 +1,85 @@
+\documentclass{vkr} % твой класс документа
+
+
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{float}
+
+
+% ------------------- Языки -------------------
+\usepackage[english, russian]{babel} % русский + английский
+\usepackage[utf8]{inputenc} % кодировка
+\usepackage[T2A]{fontenc} % шрифты для русского
+
+% ------------------- Математика -------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ------------------- Рисунки -------------------
+\usepackage{graphicx}
+\graphicspath{{images/}} % папка с изображениями
+\usepackage{float} % позиционирование рисунков [H]
+\usepackage{pdflscape} % альбомные страницы
+
+% ------------------- Ссылки -------------------
+\usepackage[hidelinks]{hyperref}
+
+% ------------------- Таблицы -------------------
+\usepackage{xltabular}
+\usepackage{array}
+\usepackage{makecell}
+\renewcommand\theadfont{} % шрифт заголовков таблиц
+\newcolumntype{T}{>{\centering\arraybackslash}X} % центрированная колонка
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X} % выравнивание по правому краю
+\newcolumntype{C}[1]{>{\centering\arraybackslash}m{#1}} % фиксированная ширина, центр
+\newcolumntype{r}[1]{>{\raggedleft\arraybackslash}p{#1}} % фиксированная ширина, вправо
+\newcommand{\centrow}{\centering\arraybackslash} % центрирование ячейки
+\newcommand{\finishhead}{\endhead\hline\endlastfoot} % для xltabular
+\usepackage[tableposition=top]{caption} % подписи таблиц
+\captionsetup[table]{font={stretch=1.2}, skip=0pt, belowskip=0pt, aboveskip=8pt, singlelinecheck=off}
+
+% ------------------- Листинги -------------------
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Цвета для Python
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+
+\lstset{
+	language=Python,
+	numbers=left,
+	numberstyle=\tiny\color{codegray},
+	stepnumber=1,
+	numbersep=5pt,
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\small,
+	backgroundcolor=\color{white},
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	frame=single,
+	tabsize=2,
+	captionpos=t,
+	breaklines=true,
+	breakatwhitespace=false,
+	escapeinside={\%*}{*)}
+}
+
+% ------------------- Отступы списков -------------------
+\usepackage{enumitem}
+\setlist{nolistsep, wide=\parindent, itemindent=*}
+
+% ------------------- Стиль списка источников -------------------
+\addto{\captionsrussian}{\renewcommand{\refname}{СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ}}
+
+% ------------------- Полезные настройки -------------------
+\usepackage{setspace} % межстрочный интервал
+\setstretch{1.2}
