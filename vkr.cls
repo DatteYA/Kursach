@@ -533,10 +533,8 @@
 	\vskip\belowcaptionskip}
 
 % Таблицы
-
 \newcounter{table}
 \newcounter{tablecnt} %всего таблиц
-
 \renewcommand\thetable{\thesection.\@arabic\c@table}
 \def\fps@table{tbp}
 \def\ftype@table{2}
@@ -734,4 +732,3 @@
 
 \frenchspacing % пробел после двоеточия
 \endinput
-
